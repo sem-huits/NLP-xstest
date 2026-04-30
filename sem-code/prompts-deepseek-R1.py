@@ -32,7 +32,7 @@ os.environ['OLLAMA_HOST'] = 'http://127.0.0.1:11434'
 client = Client(host='http://127.0.0.1:11434')
 
 llm_model = 'deepseek-r1:671b' #DeepSeek-R1
-judge_model = 'deepseek-v4-pro:671b'
+judge_model = 'qwen3-coder:30b'
 
 # check if model is available and otherwise download it.
 def ensure_model_available(client, model_name):
@@ -285,19 +285,19 @@ def process_xstest_with_judge(input_csv, output_csv, llm_model='deepseek-r1:7b-q
 # Define all datasets to process
 datasets = {
     'adult': {
-        'input': 'sem-code/adult_prompts.csv',
+        'input': 'adult_prompts.csv',
         'output': 'adult_prompts_results_full.csv'
     },
     'child': {
-        'input': 'sem-code/child_prompts.csv',
+        'input': '/child_prompts.csv',
         'output': 'child_prompts_results_full.csv'
     },
     'elderly': {
-        'input': 'sem-code/elderly_prompts.csv',
+        'input': '/elderly_prompts.csv',
         'output': 'elderly_prompts_results_full.csv'
     },
     'xstest': {
-        'input': 'sem-code/xstest_prompts.csv',
+        'input': '/xstest_prompts.csv',
         'output': 'xstest_prompts_results_full.csv'
     }
 }
