@@ -31,8 +31,8 @@ print(f"Aantal rijen: {len(xstest_standard_prompts)}\n")
 os.environ['OLLAMA_HOST'] = 'http://127.0.0.1:11434'
 client = Client(host='http://127.0.0.1:11434')
 
-llm_model = 'mistral' #DeepSeek-R1
-judge_model = 'mistral'
+llm_model = 'deepseek-r1:671b' #DeepSeek-R1
+judge_model = 'deepseek-v4-pro:671b'
 
 # check if model is available and otherwise download it.
 def ensure_model_available(client, model_name):
@@ -80,8 +80,6 @@ def ensure_model_available(client, model_name):
 # Check model 
 ensure_model_available(client, llm_model)
 ensure_model_available(client, judge_model)
-
-
 
 # ============================================================================
 # JUDGE PIPELINE FUNCTIONS
@@ -267,27 +265,60 @@ def process_xstest_with_judge(input_csv, output_csv, llm_model='deepseek-r1:7b-q
 # ============================================================================
 
 # Start with a small sample to test
-print("\n" + "="*60)
-print("Starting pilot run with 3 prompts")
-print("="*60)
+#print("\n" + "="*60)
+#print("Starting pilot run with 3 prompts")
+#print("="*60)
 
-results_df = process_xstest_with_judge(
-    input_csv='sem-code/xstest_prompts.csv',
-    output_csv='xstest_age_modified_results_pilot.csv',
-    llm_model=llm_model,
-    judge_model=judge_model,
-    sample_size=3  # Test op 3 prompts eerst
-)
+#results_df = process_xstest_with_judge(
+#    input_csv='sem-code/xstest_prompts.csv',
+#    output_csv='xstest_age_modified_results_pilot.csv',
+#    llm_model=llm_model,
+#    judge_model=judge_model,
+#    sample_size=3  # Test op 3 prompts eerst
+#)
 
-print("\nPilot results preview:")
-print(results_df.head(10))
+#print("\nPilot results preview:")
+#print(results_df.head(10))
 
 # If pilot is successful, uncomment to run full dataset:
-# results_df = process_xstest_with_judge(
-#     input_csv='sem-code/xstest_prompts.csv',
-#     output_csv='xstest_age_modified_results_full.csv',
-#     llm_model=llm_model,
-#     judge_model=judge_model,
-#     sample_size=None  # All prompts
-# )
+
+# Define all datasets to process
+datasets = {
+    'adult': {
+        'input': 'sem-code/adult_prompts.csv',
+        'output': 'adult_prompts_results_full.csv'
+    },
+    'child': {
+        'input': 'sem-code/child_prompts.csv',
+        'output': 'child_prompts_results_full.csv'
+    },
+    'elderly': {
+        'input': 'sem-code/elderly_prompts.csv',
+        'output': 'elderly_prompts_results_full.csv'
+    },
+    'xstest': {
+        'input': 'sem-code/xstest_prompts.csv',
+        'output': 'xstest_prompts_results_full.csv'
+    }
+}
+
+# Process all datasets
+results = {}
+
+print("="*70)
+print("BATCH PROCESSING ALL DATASETS")
+print("="*70)
+
+for dataset_name, paths in datasets.items():
+    print(f"\n{'='*70}")
+    print(f"Processing: {dataset_name.upper()}")
+    print(f"{'='*70}")
+    
+    results[dataset_name] = process_xstest_with_judge(
+        input_csv=paths['input'],
+        output_csv=paths['output'],
+        llm_model=llm_model,
+        judge_model=judge_model,
+        sample_size=None  # Change to None for full dataset
+    )
 
