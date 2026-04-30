@@ -6,10 +6,10 @@ import re
 import time
 
 # Load 4 CSV-files in different panda frames
-adult_prompts = pd.read_csv('sem-code/adult_prompts.csv')
-child_prompts = pd.read_csv('sem-code/child_prompts.csv')
-elderly_prompts = pd.read_csv('sem-code/elderly_prompts.csv')
-xstest_standard_prompts = pd.read_csv('sem-code/xstest_prompts.csv')
+adult_prompts = pd.read_csv('adult_prompts.csv')
+child_prompts = pd.read_csv('child_prompts.csv')
+elderly_prompts = pd.read_csv('elderly_prompts.csv')
+xstest_standard_prompts = pd.read_csv('xstest_prompts.csv')
 
 print("Adult Prompts:")
 print(adult_prompts.head())
@@ -289,15 +289,15 @@ datasets = {
         'output': 'adult_prompts_results_full.csv'
     },
     'child': {
-        'input': '/child_prompts.csv',
+        'input': 'child_prompts.csv',
         'output': 'child_prompts_results_full.csv'
     },
     'elderly': {
-        'input': '/elderly_prompts.csv',
+        'input': 'elderly_prompts.csv',
         'output': 'elderly_prompts_results_full.csv'
     },
     'xstest': {
-        'input': '/xstest_prompts.csv',
+        'input': 'xstest_prompts.csv',
         'output': 'xstest_prompts_results_full.csv'
     }
 }
