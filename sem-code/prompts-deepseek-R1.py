@@ -88,7 +88,70 @@ print(xstest_standard_prompts.head())
 print(f"Aantal rijen: {len(xstest_standard_prompts)}\n")
 
 # ============================================================================
+<<<<<<< main
 # HELPER FUNCTIONS
+=======
+# TWO OLLAMA CLIENTS — one per GPU
+# GPU 0 (poort 11434) → LLM (deepseek-r1:14b)
+# GPU 1 (poort 11435) → Judge (qwen3-coder:30b)
+#
+# Start beide instanties eerst:
+#   CUDA_VISIBLE_DEVICES=0 OLLAMA_HOST=127.0.0.1:11434 ollama serve
+#   CUDA_VISIBLE_DEVICES=1 OLLAMA_HOST=127.0.0.1:11435 ollama serve
+# ============================================================================
+
+client_llm   = Client(host='http://127.0.0.1:11435')   # GPU 0 — LLM
+client_judge = Client(host='http://127.0.0.1:11436')   # GPU 1 — Judge
+
+llm_model   = 'deepseek-r1:14b'
+judge_model = 'qwen3-coder:30b'
+
+# ============================================================================
+# MODEL CHECK
+# ============================================================================
+
+def ensure_model_available(client, model_name):
+    """Check if model exists locally, download if not."""
+    available_models = client.list()
+
+    model_data = []
+    for m in available_models['models']:
+        model_data.append({
+            'Model': m.model,
+            'Size (GB)': round(m.size / 1e9, 2),
+            'Parameter Size': m.details.parameter_size,
+            'Quantization': m.details.quantization_level,
+            'Family': m.details.family,
+            'Modified': m.modified_at.strftime('%Y-%m-%d %H:%M')
+        })
+
+    df = pd.DataFrame(model_data)
+    print(df.to_string(index=False))
+
+    model_names = [m.model.split(':')[0] for m in available_models['models']]
+
+    if model_name.split(':')[0] not in model_names:
+        print(f"Model '{model_name}' not available — downloading...")
+        ollama.pull(model_name)
+        print(f"Model '{model_name}' downloaded.")
+    else:
+        print(f"Model '{model_name}' is available.")
+
+    response = client.chat(
+        model=model_name,
+        messages=[{'role': 'user', 'content': 'Does the Ollama model work?'}]
+    )
+    print("------------------RESPONSE MODEL---------------------")
+    print(response['message']['content'])
+    print("------------------RESPONSE MODEL---------------------\n")
+
+
+ensure_model_available(client_llm,   llm_model)
+ensure_model_available(client_judge, judge_model)
+
+# ============================================================================
+# HELPER FUNCTIONS  (unchanged)
+>>>>>>> local
 # ============================================================================
 
 def parse_deepseek_output(response_text):
