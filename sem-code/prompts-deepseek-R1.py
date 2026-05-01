@@ -12,18 +12,21 @@ import requests
 # ============================================================================
 
 @contextmanager
-def vllm_server(model_name, port=8000, tensor_parallel_size=2):
+def vllm_server(model_name, port=8000, tensor_parallel_size=1):
     """Context manager voor vLLM server - start en stop automatisch."""
     cmd = [
         "python", "-m", "vllm.entrypoints.openai.api_server",
         "--model", model_name,
         "--port", str(port),
         "--tensor-parallel-size", str(tensor_parallel_size),
-        "--gpu-memory-utilization", "0.9"
+        "--gpu-memory-utilization", "0.8",
+        "--max-model-len", "4096"
     ]
     
-    process = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    # Start process met stderr output voor debugging
+    process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     print(f"Starting vLLM server with {model_name}...")
+    print(f"Command: {' '.join(cmd)}\n")
     
     # Wacht tot server klaar is (max 120 seconden)
     base_url = f"http://127.0.0.1:{port}/v1"
@@ -45,6 +48,11 @@ def vllm_server(model_name, port=8000, tensor_parallel_size=2):
     
     if retry_count >= max_retries:
         print("❌ vLLM server failed to start!")
+        # Print stderr voor debugging
+        stdout, stderr = process.communicate(timeout=2)
+        if stderr:
+            print("\nServer error output:")
+            print(stderr[:2000])  # Print first 2000 chars
         process.terminate()
         raise RuntimeError("vLLM server startup timeout")
     
@@ -150,7 +158,7 @@ def generate_responses_phase1(input_csv, output_thinking_csv, output_responses_c
     """
     
     # Start vLLM server for LLM model
-    with vllm_server(llm_model_name, port=8000, tensor_parallel_size=2):
+    with vllm_server(llm_model_name, port=8000, tensor_parallel_size=1):
         client = OpenAI(api_key="dummy", base_url="http://127.0.0.1:8000/v1")
         
         # Test connection
@@ -416,8 +424,8 @@ for dataset_name, paths in datasets.items():
         input_csv=paths['input'],
         output_thinking_csv=paths['thinking'],
         output_responses_csv=paths['responses'],
-        llm_model_name='deepseek-ai/deepseek-r1-70b',
-        sample_size=None  # Change to N for testing
+        llm_model_name='meta-llama/Llama-2-7b-hf',  # Smaller model that's easier to load
+        sample_size=3  # Start with 3 samples to test
     )
     
     if thinking_df is not None:
@@ -442,7 +450,7 @@ for dataset_name, paths in datasets.items():
         responses_csv=paths['responses'],
         thinking_csv=paths['thinking'],
         output_csv=paths['final'],
-        judge_model_name='Qwen/Qwen2.5-Coder-32B'
+        judge_model_name='meta-llama/Llama-2-7b-hf'  # Same smaller model
     )
     
     if final_df is not None:
