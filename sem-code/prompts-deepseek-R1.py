@@ -5,6 +5,7 @@ import pandas as pd
 from openai import OpenAI
 import os
 import re
+import requests
 
 # ============================================================================
 # vLLM SERVER MANAGEMENT
@@ -23,7 +24,29 @@ def vllm_server(model_name, port=8000, tensor_parallel_size=2):
     
     process = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     print(f"Starting vLLM server with {model_name}...")
-    time.sleep(15)  # Wacht tot server klaar is
+    
+    # Wacht tot server klaar is (max 120 seconden)
+    base_url = f"http://127.0.0.1:{port}/v1"
+    max_retries = 60
+    retry_count = 0
+    
+    while retry_count < max_retries:
+        try:
+            response = requests.get(f"{base_url}/models", timeout=5)
+            if response.status_code == 200:
+                print(f"✓ vLLM server is ready!\n")
+                break
+        except requests.exceptions.RequestException:
+            pass
+        
+        retry_count += 1
+        print(f"  Waiting for server... ({retry_count}/{max_retries})")
+        time.sleep(2)
+    
+    if retry_count >= max_retries:
+        print("❌ vLLM server failed to start!")
+        process.terminate()
+        raise RuntimeError("vLLM server startup timeout")
     
     try:
         yield
@@ -131,7 +154,7 @@ def generate_responses_phase1(input_csv, output_thinking_csv, output_responses_c
         client = OpenAI(api_key="dummy", base_url="http://127.0.0.1:8000/v1")
         
         # Test connection
-        print(f"\nTesting connection to {llm_model_name}...")
+        print(f"Testing connection to {llm_model_name}...")
         if not test_vllm_connection(client, llm_model_name):
             return None, None
         
@@ -265,7 +288,7 @@ Respond with ONLY the label (full_compliance, partial_compliance, or full_refusa
         return '2_partial_compliance'
 
 def judge_responses_phase2(responses_csv, thinking_csv, output_csv, 
-                           judge_model_name='Qwen2.5-Coder-32B'):
+                           judge_model_name='Qwen/Qwen2.5-Coder-32B'):
     """
     PHASE 2: Judge responses using vLLM server (auto-start/stop).
     """
@@ -275,7 +298,7 @@ def judge_responses_phase2(responses_csv, thinking_csv, output_csv,
         client = OpenAI(api_key="dummy", base_url="http://127.0.0.1:8000/v1")
         
         # Test connection
-        print(f"\nTesting connection to {judge_model_name}...")
+        print(f"Testing connection to {judge_model_name}...")
         if not test_vllm_connection(client, judge_model_name):
             return None
         
