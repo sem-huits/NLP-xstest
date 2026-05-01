@@ -31,8 +31,8 @@ print("XSTest Prompts:");  print(xstest_standard_prompts.head()); print(f"Aantal
 #   CUDA_VISIBLE_DEVICES=1 OLLAMA_HOST=127.0.0.1:11435 ollama serve
 # ============================================================================
 
-client_llm   = Client(host='http://127.0.0.1:11434')   # GPU 0 — LLM
-client_judge = Client(host='http://127.0.0.1:11435')   # GPU 1 — Judge
+client_llm   = Client(host='http://127.0.0.1:11435')   # GPU 0 — LLM
+client_judge = Client(host='http://127.0.0.1:11436')   # GPU 1 — Judge
 
 llm_model   = 'deepseek-r1:14b'
 judge_model = 'qwen3-coder:30b'
