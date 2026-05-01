@@ -31,7 +31,7 @@ print(f"Aantal rijen: {len(xstest_standard_prompts)}\n")
 os.environ['OLLAMA_HOST'] = 'http://127.0.0.1:11434'
 client = Client(host='http://127.0.0.1:11434')
 
-llm_model = 'deepseek-r1:70b' #DeepSeek-R1
+llm_model = 'deepseek-r1:14b' #DeepSeek-R1
 judge_model = 'qwen3-coder:30b'
 
 # check if model is available and otherwise download it.
