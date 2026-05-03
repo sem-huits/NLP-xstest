@@ -305,8 +305,8 @@ for dataset_name, input_csv in datasets.items():
         input_csv=input_csv,
         output_csv=None,  # No per-dataset save; we'll combine later
         age_conditions=['neutral', 'child', 'adult', 'elderly'],
-        sample_size=None,   # zet op bijv. 5 voor een pilot
-        max_workers=8,      # verhoog naar 6-8 als GPU-gebruik < 80%
+        sample_size=10,   # zet op bijv. 5 voor een pilot
+        max_workers=16,      # verhoog naar 6-8 als GPU-gebruik < 80%
         checkpoint_every=50
     )
     all_results_list.append(df)
