@@ -203,7 +203,7 @@ def process_single(task):
     }
 
 
-def process_xstest_with_judge(input_csv, output_csv,
+def process_xstest_with_judge(input_csv, output_csv=None,
                                age_conditions=['neutral', 'child', 'adult', 'elderly'],
                                sample_size=None,
                                max_workers=4,
@@ -255,7 +255,7 @@ def process_xstest_with_judge(input_csv, output_csv,
             completed += 1
 
             # Periodic checkpoint save
-            if completed % checkpoint_every == 0:
+            if output_csv and completed % checkpoint_every == 0:
                 pd.DataFrame(results).to_csv(output_csv, index=False)
                 elapsed = time.time() - start_time
                 rate    = completed / elapsed
@@ -264,11 +264,15 @@ def process_xstest_with_judge(input_csv, output_csv,
                       f"{rate:.1f} rows/s | ETA {eta/60:.1f} min")
 
     results_df = pd.DataFrame(results)
-    results_df.to_csv(output_csv, index=False)
+    if output_csv:
+        results_df.to_csv(output_csv, index=False)
 
     elapsed = time.time() - start_time
     print(f"\n{'='*60}")
-    print(f"✓ Done — {output_csv}")
+    if output_csv:
+        print(f"✓ Done — {output_csv}")
+    else:
+        print(f"✓ Processing complete")
     print(f"  Rows: {len(results_df)} | Time: {elapsed/60:.1f} min | "
           f"Avg: {elapsed/len(results_df):.1f}s/row")
     print(f"{'='*60}\n")
@@ -280,28 +284,41 @@ def process_xstest_with_judge(input_csv, output_csv,
 # ============================================================================
 
 datasets = {
-    'adult':   {'input': 'adult_prompts.csv',   'output': 'adult_prompts_results_full.csv'},
-    'child':   {'input': 'child_prompts.csv',   'output': 'child_prompts_results_full.csv'},
-    'elderly': {'input': 'elderly_prompts.csv', 'output': 'elderly_prompts_results_full.csv'},
-    'xstest':  {'input': 'xstest_prompts.csv',  'output': 'xstest_prompts_results_full.csv'},
+    'adult':   'adult_prompts.csv',
+    'child':   'child_prompts.csv',
+    'elderly': 'elderly_prompts.csv',
+    'xstest':  'xstest_prompts.csv',
 }
 
-all_results = {}
+all_results_list = []
 
 print("=" * 70)
 print("BATCH PROCESSING ALL DATASETS")
 print("=" * 70)
 
-for dataset_name, paths in datasets.items():
+for dataset_name, input_csv in datasets.items():
     print(f"\n{'='*70}")
     print(f"Processing: {dataset_name.upper()}")
     print(f"{'='*70}")
 
-    all_results[dataset_name] = process_xstest_with_judge(
-        input_csv=paths['input'],
-        output_csv=paths['output'],
+    df = process_xstest_with_judge(
+        input_csv=input_csv,
+        output_csv=None,  # No per-dataset save; we'll combine later
         age_conditions=['neutral', 'child', 'adult', 'elderly'],
         sample_size=None,   # zet op bijv. 5 voor een pilot
         max_workers=4,      # verhoog naar 6-8 als GPU-gebruik < 80%
         checkpoint_every=50
     )
+    all_results_list.append(df)
+
+# Combine all results
+all_results_df = pd.concat(all_results_list, ignore_index=True)
+
+# Save separate files by age condition
+for age in ['neutral', 'child', 'adult', 'elderly']:
+    age_df = all_results_df[all_results_df['age_condition'] == age]
+    output_file = f'{age}_results_full.csv'
+    age_df.to_csv(output_file, index=False)
+    print(f"Saved {len(age_df)} rows to {output_file}")
+
+print("\nAll processing complete!")

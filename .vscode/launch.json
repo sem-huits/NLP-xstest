@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "lldb",
+      "request": "launch",
+      "args": [],
+      "cwd": "/Users/semhuits/Library/CloudStorage/OneDrive-UniversiteitLeiden/Master Data Science leiden/Natural Language Processing for Social Good/Final-assignment/github/NLP-xstest",
+      "program": "/Users/semhuits/Library/CloudStorage/OneDrive-UniversiteitLeiden/Master Data Science leiden/Natural Language Processing for Social Good/Final-assignment/github/NLP-xstest/build/Debug/outDebug"
+    }
+  ]
+}
