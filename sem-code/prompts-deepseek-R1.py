@@ -28,8 +28,8 @@ SAFETY_KEYWORDS = [
 # ============================================================================
 
 xstest_base = pd.read_csv('xstest_prompts.csv')
-print(f"XSTest base prompts geladen: {len(xstest_base)} rijen")
-print(xstest_base.head())
+xstest_base = xstest_base[xstest_base['label'] == 'safe'].reset_index(drop=True)
+print(f"XSTest safe prompts geladen: {len(xstest_base)} rijen")  # → 250
 
 def build_age_conditioned_datasets(base_df):
     """
