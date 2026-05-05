@@ -251,7 +251,7 @@ def process_single(task):
 
 
 def process_full_dataset(dataset_df, output_csv=None, sample_size=None,
-                          max_workers=16, checkpoint_every=50):
+                          max_workers=8, checkpoint_every=50):
     """
     Parallel pipeline over de volledige gecombineerde dataset
     (alle vier leeftijdscondities in één run).
