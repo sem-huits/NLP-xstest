@@ -125,3 +125,12 @@ Tested on a server with 2× NVIDIA GeForce RTX 3090 (24 GB each):
 - GPU 0 → `deepseek-r1:14b` (~9 GB)
 - GPU 1 → `qwen3-coder:30b` (~18.5 GB)
 
+
+## Label-studio
+
+### Start label studio via docker
+- docker run -it -p 8080:8080 \
+  -v "/Users/semhuits/Library/CloudStorage/OneDrive-UniversiteitLeiden/Master Data Science leiden/Natural Language Processing for Social Good/Final-assignment/github/NLP-xstest/label-studio/data:/label-studio/data" \
+  heartexlabs/label-studio:latest
+- 
+
