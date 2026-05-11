@@ -16,8 +16,8 @@ import ollama
 # CONFIGURATIE — pas dit aan
 # ============================================================================
 
-INPUT_CSV   = '/tmp/sem-folder/all_results.csv'
-OUTPUT_CSV  = '/tmp/sem-folder/all_results_rejudged.csv'
+INPUT_CSV   = 'all_results.csv'
+OUTPUT_CSV  = 'all_results_rejudged.csv'
 
 JUDGE_HOST  = 'http://127.0.0.1:11437'   # standaard Ollama poort
 JUDGE_MODEL = 'gemma3:12b'              # verander naar gewenst model
