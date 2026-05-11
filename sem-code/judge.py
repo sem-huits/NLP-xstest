@@ -40,7 +40,7 @@ def ensure_model(client, model_name):
     names = [m.model.split(':')[0] for m in available['models']]
     if model_name.split(':')[0] not in names:
         print(f"Downloaden: {model_name}...")
-        ollama.pull(model_name)
+        client.pull(model_name)
     else:
         print(f"Model '{model_name}' beschikbaar.")
 
