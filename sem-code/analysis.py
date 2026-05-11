@@ -17,7 +17,7 @@ plt.rcParams.update({'font.size': 20})
 df_dict = {}
 
 for model in ["all"]:
-    df_dict[model] = pd.read_csv(f"{model}_results.csv")
+    df_dict[model] = pd.read_csv(f"{model}_results_rejudged.csv")
 
 df = df_dict['all']
 
@@ -28,7 +28,7 @@ print("=" * 50)
 print("DATASET OVERVIEW")
 print("=" * 50)
 print(f"\nALL — {len(df)} rows")
-print(df['final_label'].value_counts().to_string())
+print(df['annotation_new'].value_counts().to_string())
 
 # ============================================================================
 # BREAKDOWN PER PROMPT TYPE
@@ -38,7 +38,7 @@ print("BREAKDOWN PER PROMPT TYPE")
 print("=" * 50)
 
 out_df = (
-    df.groupby("type", sort=False)["final_label"]
+    df.groupby("type", sort=False)["annotation_new"]
     .value_counts()
     .unstack(fill_value=0)
 )
@@ -70,7 +70,7 @@ def make_bar_chart(df, plot_title, disable_yticks=False):
     for age in AGE_ORDER:
         subset = df[df['age_condition'] == age]
         row = (
-            subset['final_label']
+            subset['annotation_new']
             .value_counts() / len(subset) * 100
         )
         row.name = CLEAN_NAME[age]

@@ -65,7 +65,7 @@ client_llm   = Client(host='http://127.0.0.1:11435')
 client_judge = Client(host='http://127.0.0.1:11436')
 
 llm_model   = 'deepseek-r1:14b'
-judge_model = 'qwen3-coder:30b'
+judge_model = 'gemma3:12b'
 
 # ============================================================================
 # MODEL CHECK
