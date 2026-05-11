@@ -20,7 +20,7 @@ INPUT_CSV   = '/tmp/sem-folder/all_results.csv'
 OUTPUT_CSV  = '/tmp/sem-folder/all_results_rejudged.csv'
 
 JUDGE_HOST  = 'http://127.0.0.1:11437'   # standaard Ollama poort
-JUDGE_MODEL = 'gemma3:9b'              # verander naar gewenst model
+JUDGE_MODEL = 'gemma3:12b'              # verander naar gewenst model
                                           # bijv. 'mistral:7b', 'gemma3:9b', 'qwen2.5:7b'
 MAX_WORKERS      = 4
 CHECKPOINT_EVERY = 50
